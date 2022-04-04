@@ -1,12 +1,30 @@
-# Progressive-Pruning
+<h1 align="center">APP: Anytime Progressive Pruning</h1>
+<p align="center">Diganta Misra<sup>1,2,3</sup>, Bharat Runwal<sup>2,4</sup>, Tianlong Chen<sup>5</sup>, Zhangyang Wang<sup>5</sup>, Irina Rish<sup>1,3</sup></p>
+<p align="center"><sup>1</sup>Mila - Quebec AI Institute,<sup>2</sup>Landskape AI,<sup>3</sup>UdeM,<sup>4</sup>IIT-Delhi,<sup>5</sup>VITA, UT-Austin</p>
 
+<p align="center">
+  <a href="" alt="ArXiv">
+        <img src="https://img.shields.io/badge/Preprint-arXiv-blue.svg" /></a>
+  <a href="https://wandb.ai/landskape/APP" alt="Dashboard">
+        <img src="https://img.shields.io/badge/WandB-Dashboard-gold.svg" /></a>
+  <a href="https://landskape.ai/project/lth/" alt="Project">
+          <img src="https://img.shields.io/badge/Project-Website-green.svg" /></a>
+</p>
 
+<p float="left">
+  <img src ="app.png"  width="1000"/>
+</p>
+<p>
+    <em>Figure 1. Structural Design of APP.</em>
+</p>
 
 ### Requirements
 
+For running the code on Restricted-Imagenet Dataset, first install the robustness library from [here](https://github.com/landskape-ai/Progressive-Pruning/tree/main/robustness) and provide the imagenet_path argument as the path to the imaganet data folder. 
+
 ### Run the Code
 
-Here is an example of running the Anytime Progressive Pruning on Cifar-10 dataset 8 Mega-Batches:
+Here is an example of running the Anytime Progressive Pruning (APP) on Cifar-10 dataset with 8 megabatches in total:
 ```
 python main_anytime_train.py \
     --data ../data \
@@ -55,5 +73,3 @@ python main_anytime_baseline.py \
     --meta_batch_number 8 \
     --save_dir c10_BASE_r50
 ```
-
-For running the code on Restricted-Imagenet Dataset, first install the robustness library from [here](https://github.com/landskape-ai/Progressive-Pruning/tree/main/robustness) and provide the imagenet_path argument as the path to the imaganet data folder. 
