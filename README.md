@@ -21,7 +21,7 @@ python main_anytime_train.py \
     --meta_batch_number 8 \
     --sparsity_level 4.5 \
     --snip_size 0.20 \
-    --save_dir /home/mila/d/diganta.misra/scratch/anytime_c10_resnet50_seed1_multi
+    --save_dir c10_r50
 ```
 One-Shot pruning :
 ```
