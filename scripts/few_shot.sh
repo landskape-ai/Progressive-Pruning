@@ -3,7 +3,7 @@ n_shots = $1
 
 python main_anytime_train.py \
     --data ../data \
-    --dataset restricted_imagenet \
+    --dataset cifar10 \
     --arch resnet50 \
     --seed 1 \
     --epochs 50 \
@@ -16,4 +16,4 @@ python main_anytime_train.py \
     --snip_size 0.20 \
     --few_shot \
     --n_shots ${n_shots} \
-    --save_dir c10_r50
+    --save_dir few_shot_${n_shots}_r50
