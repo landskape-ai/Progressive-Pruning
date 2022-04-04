@@ -1,6 +1,3 @@
-"""
-    main process for retrain a subnetwork from beginning
-"""
 import argparse
 import os
 import pdb
@@ -26,7 +23,7 @@ from advertorch.utils import NormalizeByChannelMeanStd
 from torch.utils.data.sampler import SubsetRandomSampler
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
-
+from wb import WandBLogger
 from dataset import (
     generate_anytime_cifar10_dataloader,
     generate_anytime_cifar100_dataloader,
@@ -39,7 +36,7 @@ from dataset import (
 from generate_mask import generate_mask_
 from pruner import *
 from utils import setup_model,evaluate_cer
-
+from wb import WandBLogger
 
 parser = argparse.ArgumentParser(description="PyTorch Anytime Training")
 
@@ -124,6 +121,14 @@ parser.add_argument(
 parser.add_argument(
     "--scope", default="global", type=str, help="Scope of Pruner[local,global]"
 )
+##################################### W&B Logging setting #################################################
+parser.add_argument("-wb", action="store_true", help="Flag for using W&B logging")
+parser.add_argument(
+    "--project_name", default="APP", type=str, help="Name of the W&B project"
+)
+parser.add_argument(
+    "--run", default="Anytime_fixed", type=str, help="Name for the W&B run"
+)
 
 
 best_sa = 0
@@ -195,6 +200,18 @@ def main():
         optimizer, milestones=decreasing_lr, gamma=0.1
     )
 
+    if args.wb:
+        wandb_logger = WandBLogger(
+        project_name=args.project_name,
+        run_name=args.run,
+        dir=args.save_dir,
+        config=vars(args),
+        model=model,
+        params = {'resume':args.resume}
+    )
+    else:
+        wandb_logger = None
+
     if args.resume:
         print("resume from checkpoint {}".format(args.checkpoint))
         checkpoint = torch.load(
@@ -230,6 +247,9 @@ def main():
     CER_diff = []
 
     for current_state in range(start_state, args.meta_batch_number + 1):
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, milestones=decreasing_lr, gamma=0.1
+        )
         start_time = time.time()
         print("Current state = {}".format(current_state))
 
@@ -345,7 +365,8 @@ def main():
                 save_path=args.save_dir,
             )
 
-    
+        if wandb_logger:
+            wandb_logger.log_metrics(all_result)    
 
         # report result
         val_pick_best_epoch = np.argmax(np.array(all_result["val_ta"]))
@@ -377,6 +398,7 @@ def main():
         print("Total time elapsed: {:.4f}s".format(end_time))
         time_list.append(end_time)
 
+
         if args.dataset=="restricted_imagenet":
             CER.append(evaluate_cer(model, args,test_loader))
         else:
@@ -387,9 +409,18 @@ def main():
             CER_diff.append(diff)
             print("CER diff = {}".format(diff))
 
+        # Reset LR to 0.1 after each state
+        for g in optimizer.param_groups:
+            g['lr'] = 0.1
+        print("LR reset to 0.1")
+        print(optimizer.state_dict()["param_groups"][0]["lr"])   
+
+
 
     test_tacc = validate(test_loader, model, criterion)
     print("Test Acc = {}".format(test_tacc))
+    wandb_logger.log_metrics({"Test/test_acc": test_tacc})
+    wandb_logger.log_metrics({"Test/CER": sum(CER)})
     print("CER = {}".format(sum(CER)))
     print("CER")
     print(CER)
