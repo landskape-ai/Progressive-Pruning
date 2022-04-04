@@ -11,11 +11,8 @@
           <img src="https://img.shields.io/badge/Project-Website-green.svg" /></a>
 </p>
 
-<p float="left">
+<p align="center">
   <img src ="app.png"  width="1000"/>
-</p>
-<p>
-    <em>Figure 1. Structural Design of APP.</em>
 </p>
 
 ### Requirements
