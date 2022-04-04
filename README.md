@@ -2,12 +2,12 @@
 
 
 
-## Requirements
+### Requirements
 
-## Run the Code
-```
+### Run the Code
+
 Here is an example of running the Anytime Progressive Pruning on Cifar-10 dataset 8 Mega-Batches:
-
+```
 python main_anytime_train.py \
     --data ../data \
     --dataset cifar10 \
