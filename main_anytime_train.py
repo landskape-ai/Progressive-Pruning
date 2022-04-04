@@ -7,11 +7,11 @@ import shutil
 import time
 from copy import deepcopy
 
-import utils
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
+import torch.multiprocessing
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim
@@ -21,23 +21,21 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from advertorch.utils import NormalizeByChannelMeanStd
 from torch.utils.data.sampler import SubsetRandomSampler
-import torch.multiprocessing
-torch.multiprocessing.set_sharing_strategy('file_system')
+
+import utils
+
+torch.multiprocessing.set_sharing_strategy("file_system")
 
 
-
-from dataset import (
-    generate_anytime_cifar10_dataloader,
-    generate_anytime_cifar100_dataloader,
-    setup__cifar10_dataset,
-    setup__cifar100_dataset,
-    Setup_RestrictedImageNet,
-    generate_anytime_res_img_dataloader_few,
-    generate_anytime_res_img_dataloader
-)
+from dataset import (Setup_RestrictedImageNet,
+                     generate_anytime_cifar10_dataloader,
+                     generate_anytime_cifar100_dataloader,
+                     generate_anytime_res_img_dataloader,
+                     generate_anytime_res_img_dataloader_few,
+                     setup__cifar10_dataset, setup__cifar100_dataset)
 from generate_mask import generate_mask_
 from pruner import *
-from utils import setup_model,evaluate_cer
+from utils import evaluate_cer, setup_model
 from wb import WandBLogger
 
 parser = argparse.ArgumentParser(description="PyTorch Anytime Training")
@@ -64,7 +62,10 @@ parser.add_argument(
     help="architecture for imagenet size samples",
 )
 parser.add_argument(
-    "--imagenet_path", type=str, default="../imagenet", help="location of the imagenet folder"
+    "--imagenet_path",
+    type=str,
+    default="../imagenet",
+    help="location of the imagenet folder",
 )
 
 ##################################### General setting ############################################
@@ -85,15 +86,24 @@ parser.add_argument("-no_replay", action="store_true", help="Flag for No Replay"
 parser.add_argument("-one_replay", action="store_true", help="Flag for No Replay")
 parser.add_argument("-buffer_replay", action="store_true", help="Flag for No Replay")
 parser.add_argument(
-    "--buffer_size_train", default=182, type=int, help="number of Random Train examples to add in buffer"
+    "--buffer_size_train",
+    default=182,
+    type=int,
+    help="number of Random Train examples to add in buffer",
 )
 parser.add_argument(
-    "--buffer_size_valid", default=182, type=int, help="number of Random Valid examples to add in buffer"
+    "--buffer_size_valid",
+    default=182,
+    type=int,
+    help="number of Random Valid examples to add in buffer",
 )
 parser.add_argument("-snip_no_replay", action="store_true", help="Flag for No Replay")
 parser.add_argument("-few_shot", action="store_true", help="Flag for No Replay")
 parser.add_argument(
-    "--n_shots", default=100, type=int, help="number of Random Valid examples to add in buffer"
+    "--n_shots",
+    default=100,
+    type=int,
+    help="number of Random Valid examples to add in buffer",
 )
 ##################################### Training setting #################################################
 parser.add_argument("--batch_size", type=int, default=128, help="batch size")
@@ -154,20 +164,15 @@ def main():
     if args.seed:
         setup_seed(args.seed)
 
- 
-    
     model = setup_model(args)
-
-
 
     if args.dataset == "cifar10":
         whole_trainset = setup__cifar10_dataset(args)
     elif args.dataset == "cifar100":
         whole_trainset = setup__cifar100_dataset(args)
-    elif args.dataset =="restricted_imagenet":
-        whole_trainset,test_set =Setup_RestrictedImageNet(args,args.imagenet_path)
+    elif args.dataset == "restricted_imagenet":
+        whole_trainset, test_set = Setup_RestrictedImageNet(args, args.imagenet_path)
 
-   
     if args.tickets_init:
         print("loading init from {}".format(args.tickets_init))
         init_file = torch.load(args.tickets_init, map_location="cpu")
@@ -187,8 +192,6 @@ def main():
         print("pruning with {} masks".format(len(mask_file)))
         prune_model_custom(model, mask_file)
 
-
-
     model.cuda()
 
     criterion = nn.CrossEntropyLoss()
@@ -200,19 +203,19 @@ def main():
         momentum=args.momentum,
         weight_decay=args.weight_decay,
     )
-    
+
     scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=decreasing_lr, gamma=0.1
     )
     if args.wb:
         wandb_logger = WandBLogger(
-        project_name=args.project_name,
-        run_name=args.run,
-        dir=args.save_dir,
-        config=vars(args),
-        model=model,
-        params = {'resume':args.resume}
-    )
+            project_name=args.project_name,
+            run_name=args.run,
+            dir=args.save_dir,
+            config=vars(args),
+            model=model,
+            params={"resume": args.resume},
+        )
     else:
         wandb_logger = None
 
@@ -252,14 +255,13 @@ def main():
         sparsity = [args.sparsity_level for x in range(args.meta_batch_number)]
     else:
         sparsity = np.linspace(1, args.sparsity_level, args.meta_batch_number)
-     
 
     time_list = []
     CER = []
     CER_diff = []
     for current_state in range(start_state, args.meta_batch_number + 1):
         scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer, milestones=decreasing_lr, gamma=0.1
+            optimizer, milestones=decreasing_lr, gamma=0.1
         )
         print("Current state = {}".format(current_state))
         start_time = time.time()
@@ -289,17 +291,21 @@ def main():
                     val_loader,
                     test_loader,
                     train_snip_set,
-                ) = generate_anytime_res_img_dataloader(args, whole_trainset,test_set,80565,current_state)
+                ) = generate_anytime_res_img_dataloader(
+                    args, whole_trainset, test_set, 80565, current_state
+                )
 
             elif args.meta_batch_number == 10:
                 # Few Shot Dataloader Example
-                 (
+                (
                     train_loader,
                     val_loader,
                     test_loader,
                     train_snip_set,
-                ) = generate_anytime_res_img_dataloader_few(args, whole_trainset,test_set,6800, current_state)
-        
+                ) = generate_anytime_res_img_dataloader_few(
+                    args, whole_trainset, test_set, 6800, current_state
+                )
+
         # Generate Mask using SNIP
         sparsity_level = sparsity[current_state - 1]
         save_mask = (
@@ -322,8 +328,6 @@ def main():
             save=save_mask,
             state=sparsity_level,
         )
-
-
 
         model.cpu()
         # Load the Model by applying above mask
@@ -377,7 +381,7 @@ def main():
             )
 
         if wandb_logger:
-            wandb_logger.log_metrics(all_result)    
+            wandb_logger.log_metrics(all_result)
         # report result
         val_pick_best_epoch = np.argmax(np.array(all_result["val_ta"]))
         print(
@@ -407,10 +411,9 @@ def main():
         end_time = time.time() - start_time
         print("Total time elapsed: {:.4f}s".format(end_time))
         time_list.append(end_time)
-        
-        
-        if args.dataset=="restricted_imagenet":
-            CER.append(evaluate_cer(model, args,test_loader))
+
+        if args.dataset == "restricted_imagenet":
+            CER.append(evaluate_cer(model, args, test_loader))
         else:
             CER.append(evaluate_cer(model, args))
 
@@ -418,14 +421,12 @@ def main():
             diff = (CER[current_state - 1] - CER[current_state - 2]) / 10000
             CER_diff.append(diff)
             print("CER diff: {}".format(diff))
-        
+
         # Reset LR to 0.1 after each state
         for g in optimizer.param_groups:
-            g['lr'] = 0.1
+            g["lr"] = 0.1
         print("LR reset to 0.1")
-        print(optimizer.state_dict()["param_groups"][0]["lr"])   
-        
-   
+        print(optimizer.state_dict()["param_groups"][0]["lr"])
 
     test_tacc = validate(test_loader, model, criterion)
 
@@ -433,7 +434,7 @@ def main():
     print("CER = {}".format(sum(CER)))
     wandb_logger.log_metrics({"Test/test_acc": test_tacc})
     wandb_logger.log_metrics({"Test/CER": sum(CER)})
-    
+
     print("Final Test Accuracy: ")
     print(test_tacc)
     print("CER")

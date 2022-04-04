@@ -118,7 +118,7 @@ def generate_mask_(args, data, pruner, model_dir, save, state, gpu=0):
     elif pruner == "GraSP":
         print("Pruning with GraSP")
         criterion = nn.CrossEntropyLoss()
-     
+
         trainset = torchvision.datasets.CIFAR10(
             args.data, train=True, download=True, transform=transforms.ToTensor()
         )

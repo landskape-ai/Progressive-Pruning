@@ -2,10 +2,9 @@
     setup model and datasets
 """
 
-from advertorch.utils import NormalizeByChannelMeanStd
-
 import torch
 import torch.nn as nn
+from advertorch.utils import NormalizeByChannelMeanStd
 # from advertorch.utils import NormalizeByChannelMeanStd
 from torch.autograd.variable import Variable
 from torch.utils.data import DataLoader
@@ -18,7 +17,7 @@ from models import *
 __all__ = ["setup_model_dataset", "setup_model"]
 
 
-def evaluate_cer(net, args,loader_=None):
+def evaluate_cer(net, args, loader_=None):
     criterion = nn.CrossEntropyLoss()
     test_transform = transforms.Compose(
         [
@@ -30,26 +29,26 @@ def evaluate_cer(net, args,loader_=None):
             "../data", train=False, transform=test_transform, download=True
         )
         test_loader = DataLoader(
-        test_set,
-        batch_size=128,
-        shuffle=False,
-        num_workers=2,
-        pin_memory=True,
-    )
+            test_set,
+            batch_size=128,
+            shuffle=False,
+            num_workers=2,
+            pin_memory=True,
+        )
     elif args.dataset == "cifar100":
         test_set = CIFAR100(
             "../data", train=False, transform=test_transform, download=True
         )
         test_loader = DataLoader(
-        test_set,
-        batch_size=128,
-        shuffle=False,
-        num_workers=2,
-        pin_memory=True,
-    )
+            test_set,
+            batch_size=128,
+            shuffle=False,
+            num_workers=2,
+            pin_memory=True,
+        )
     elif args.dataset == "restricted_imagenet":
-        test_loader=  loader_
-  
+        test_loader = loader_
+
     correct = 0
     total_loss = 0
     total = 0  # number of samples
@@ -83,6 +82,7 @@ def evaluate_cer(net, args,loader_=None):
 
     return misclassified
 
+
 def setup_model(args):
 
     if args.dataset == "cifar10":
@@ -98,18 +98,17 @@ def setup_model(args):
         )
 
     elif args.dataset == "restricted_imagenet":
-        classes =14
-        
+        classes = 14
+
     if args.imagenet_arch:
-        if args.dataset=="restricted_imagenet":
+        if args.dataset == "restricted_imagenet":
             classes = 14
         model = model_dict[args.arch](num_classes=classes, imagenet=True)
 
     else:
         model = model_dict[args.arch](num_classes=classes)
- 
-    if args.dataset!="restricted_imagenet":
+
+    if args.dataset != "restricted_imagenet":
         model.normalize = normalization
 
     return model
-

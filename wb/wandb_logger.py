@@ -72,7 +72,7 @@ class WandBLogger:
             "name": self.run_name,
             "save_code": self.save_code,
             "dir": self.dir,
-            "config": self.config
+            "config": self.config,
         }
         if self.params:
             self.init_kwargs.update(self.params)
