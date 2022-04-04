@@ -17,6 +17,12 @@
 
 ### Requirements
 
+To create a new conda environment with the dependencies used in this project, do: 
+
+```
+conda env create -f app.yml
+```
+
 For running the code on Restricted-Imagenet Dataset, first install the robustness library from [here](https://github.com/landskape-ai/Progressive-Pruning/tree/main/robustness) and provide the imagenet_path argument as the path to the imaganet data folder. 
 
 ### Run the Code
