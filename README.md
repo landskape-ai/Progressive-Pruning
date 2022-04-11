@@ -7,7 +7,7 @@
         <img src="https://img.shields.io/badge/Preprint-arXiv-blue.svg" /></a>
   <a href="https://wandb.ai/landskape/APP" alt="Dashboard">
         <img src="https://img.shields.io/badge/WandB-Dashboard-gold.svg" /></a>
-  <a href="https://landskape.ai/project/lth/" alt="Project">
+  <a href="https://landskape.ai/publication/app/" alt="Project">
           <img src="https://img.shields.io/badge/Project-Website-green.svg" /></a>
 </p>
 
