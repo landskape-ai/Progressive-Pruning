@@ -343,7 +343,7 @@ def main():
         print("LR reset to 0.1")
         print(optimizer.state_dict()["param_groups"][0]["lr"])
 
-    test_tacc = validate(test_loader, model, criterion)
+    test_tacc, _ = validate(test_loader, model, criterion)
     wandb_logger.log_metrics({"Test/test_acc": test_tacc})
     wandb_logger.log_metrics({"Test/CER": sum(CER)})
 
