@@ -428,7 +428,7 @@ def main():
         print("LR reset to 0.1")
         print(optimizer.state_dict()["param_groups"][0]["lr"])
 
-    test_tacc = validate(test_loader, model, criterion)
+    test_tacc, _ = validate(test_loader, model, criterion)
 
     print("Test Acc = {}".format(test_tacc))
     print("CER = {}".format(sum(CER)))
