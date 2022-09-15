@@ -1,7 +1,7 @@
 <h1 align="center">APP: Anytime Progressive Pruning</h1>
-<p align="center">Diganta Misra<sup>1,2,3</sup>, Bharat Runwal<sup>2,4</sup>, Tianlong Chen<sup>5</sup>, Zhangyang Wang<sup>5</sup>, Irina Rish<sup>1,3</sup></p>
+<p align="center">Diganta Misra<sup>*,1,2,3</sup>, Bharat Runwal<sup>*,2,4</sup>, Tianlong Chen<sup>5</sup>, Zhangyang Wang<sup>5</sup>, Irina Rish<sup>1,3</sup></p>
 <p align="center"><sup>1</sup> Mila - Quebec AI Institute,<sup>2</sup> Landskape AI,<sup>3</sup> UdeM,<sup>4</sup> IIT-Delhi,<sup>5</sup> VITA, UT-Austin</p>
-
+<p align="center"><sup>*</sup> Equal Contribution </p>
 <p align="center">
   <a href="https://arxiv.org/abs/2204.01640" alt="ArXiv">
         <img src="https://img.shields.io/badge/Preprint-arXiv-blue.svg" /></a>
