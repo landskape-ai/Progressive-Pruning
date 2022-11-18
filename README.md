@@ -6,7 +6,7 @@
   <a href="https://arxiv.org/abs/2204.01640" alt="ArXiv">
         <img src="https://img.shields.io/badge/Preprint-arXiv-blue.svg" /></a>
   <a href="https://www.sparseneural.net/" alt="SNN">
-        <img src="https://img.shields.io/badge/SNN-ICML'22-violet.svg" /></a>
+        <img src="https://img.shields.io/badge/SNN-2022-violet.svg" /></a>
   <a href="https://continual-lifelong-learners.github.io/" alt="ACML">
         <img src="https://img.shields.io/badge/CLL-ACML'22-pink.svg" /></a>
   <a href="https://dynn-icml2022.github.io/" alt="Dynn">
