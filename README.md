@@ -11,6 +11,8 @@
         <img src="https://img.shields.io/badge/CLL-ACML'22-pink.svg" /></a>
   <a href="https://dynn-icml2022.github.io/" alt="Dynn">
         <img src="https://img.shields.io/badge/DyNN-ICML'22-purple.svg" /></a>
+  <a href="https://slowdnn-workshop.github.io/" alt="Dynn">
+        <img src="https://img.shields.io/badge/SlowDNN-2023-black.svg" /></a>
   <a href="https://wandb.ai/landskape/APP" alt="Dashboard">
         <img src="https://img.shields.io/badge/WandB-Dashboard-gold.svg" /></a>
   <a href="https://landskape.ai/publication/app/" alt="Project">
